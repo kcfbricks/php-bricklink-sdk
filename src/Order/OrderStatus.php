@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+namespace Kcfbricks\PhpBricklinkSdk\Order;
+
 enum OrderStatus: string {
 	case PENDING    = "PENDING";
 	case UPDATED    = "UPDATED";

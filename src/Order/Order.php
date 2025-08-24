@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Kcfbricks\PhpBricklinkSdk\Order;
 
 use DateTime;
+use Kcfbricks\PhpBricklinkSdk\ApiObject;
 
-class Order {
+class Order extends ApiObject {
 	/**
 	 * Unique identifier for this order for internal use
 	 */
