@@ -1,0 +1,20 @@
+{
+    "name": "kcfbricks/php-bricklink-sdk",
+    "description": "PHP SDK for the BrickLink API",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^7.10",
+        "guzzlehttp/oauth-subscriber": "^0.8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kcfbricks\\PhpBricklinkSdk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alex Burgess",
+            "email": "aeb.qaz@gmail.com"
+        }
+    ]
+}
