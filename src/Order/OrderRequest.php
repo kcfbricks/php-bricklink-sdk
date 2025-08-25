@@ -44,8 +44,6 @@ class OrderRequest {
 			$orderItems[$thisBatchKey] = $mapper->mapArray($thisBatch, [], OrderItem::class);
 		}
 
-		var_dump($orderItems);
-
 		return $orderItems;
 	}
 }

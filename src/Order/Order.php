@@ -75,7 +75,7 @@ class Order extends ApiObject {
 	/**
 	 * User remarks for this order
 	 */
-	protected string $remarks;
+	protected ?string $remarks = null;
 
 	/**
 	 * The total number of items included in this order
@@ -244,11 +244,11 @@ class Order extends ApiObject {
 		return $this;
 	}
 
-	public function getRemarks(): string {
+	public function getRemarks(): ?string {
 		return $this->remarks;
 	}
 
-	public function setRemarks(string $remarks): self {
+	public function setRemarks(?string $remarks): self {
 		$this->setProperty('remarks', $remarks);
 
 		return $this;
