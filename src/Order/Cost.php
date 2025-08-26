@@ -51,12 +51,12 @@ class Cost extends ApiObject {
 	protected float $coupon;
 
 	/**
-	 * VAT percentage (GST) applied to this order. Currently not implemented by the BrickLink API
+	 * VAT percentage (GST) applied to this order
 	 */
 	protected float $vatRate;
 
 	/**
-	 * Total amount of VAT (GST) included in the grand total price. Currently not implemented by the BrickLink API
+	 * Total amount of VAT (GST) included in the grand total price
 	 */
 	protected float $vatAmount;
 

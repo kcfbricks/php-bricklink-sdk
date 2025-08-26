@@ -19,7 +19,7 @@ class Item extends ApiObject implements JsonSerializable {
 	/**
 	 * The type of the item
 	 */
-	protected string $type;
+	protected ItemType $type;
 
 	/**
 	 * The main category of the item
@@ -101,11 +101,11 @@ class Item extends ApiObject implements JsonSerializable {
 		return $this;
 	}
 
-	public function getType(): string {
+	public function getType(): ItemType {
 		return $this->type;
 	}
 
-	public function setType(string $type): self {
+	public function setType(ItemType $type): self {
 		$this->setProperty('type', $type);
 
 		return $this;

@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace Kcfbricks\PhpBricklinkSdk\Order;
 
 enum OrderStatus: string {
-	case PENDING    = "PENDING";
-	case UPDATED    = "UPDATED";
-	case PROCESSING = "PROCESSING";
-	case READY      = "READY";
-	case PAID       = "PAID";
-	case PACKED     = "PACKED";
-	case SHIPPED    = "SHIPPED";
-	case RECEIVED   = "RECEIVED";
-	case COMPLETED  = "COMPLETED";
-	case OCR        = "OCR";
-	case NPB        = "NPB";
-	case NPX        = "NPX";
-	case NRS        = "NRS";
-	case NSS        = "NSS";
-	case CANCELLED  = "CANCELLED";
+	case Pending    = "PENDING";
+	case Updated    = "UPDATED";
+	case Processing = "PROCESSING";
+	case Ready      = "READY";
+	case Paid       = "PAID";
+	case Packed     = "PACKED";
+	case Shipped    = "SHIPPED";
+	case Received   = "RECEIVED";
+	case Completed  = "COMPLETED";
+	case Ocr        = "OCR";
+	case Npb        = "NPB";
+	case Npx        = "NPX";
+	case Nrs        = "NRS";
+	case Nss        = "NSS";
+	case Cancelled  = "CANCELLED";
 }

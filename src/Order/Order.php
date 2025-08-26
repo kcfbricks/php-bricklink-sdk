@@ -55,7 +55,7 @@ class Order extends ApiObject {
 	/**
 	 * The status of an order
 	 */
-	protected string $status;
+	protected OrderStatus $status;
 
 	/**
 	 * Indicates whether the order is invoiced or not
@@ -204,11 +204,11 @@ class Order extends ApiObject {
 		return $this;
 	}
 
-	public function getStatus(): string {
+	public function getStatus(): OrderStatus {
 		return $this->status;
 	}
 
-	public function setStatus(string $status): self {
+	public function setStatus(OrderStatus $status): self {
 		$this->setProperty('status', $status);
 
 		return $this;
