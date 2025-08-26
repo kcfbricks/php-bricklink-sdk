@@ -6,6 +6,52 @@ use JsonMapper;
 use Kcfbricks\PhpBricklinkSdk\Client;
 
 class OrderRequest {
+	public static function getOrders(
+		Client $client,
+		?OrderDirection $direction = null,
+		?string $status = null,
+		?bool $filed = null
+	): ?array {
+		$queryStringParameters = [];
+
+		if ($direction) {
+			$queryStringParameters['direction'] = $direction->value;
+		}
+
+		if ($status) {
+			$queryStringParameters['status'] = $status;
+		}
+
+		if ($filed !== null) {
+			$queryStringParameters['filed'] = $filed ? "true" : "false";
+		}
+
+		$url = "orders";
+
+		if ($queryStringParameters) {
+			$url .= "?" . http_build_query($queryStringParameters);
+		}
+
+		$response    = $client->makeRequest($url);
+		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
+
+		if (!isset($decodedJson->data)) {
+			return null;
+		}
+
+		//return the list of orders as decoded JSON
+		//if there's an error, an exception will have been thrown
+		$mapper                            = new \JsonMapper();
+		$mapper->bStrictObjectTypeChecking = false;
+		$orders                            = $mapper->mapArray($decodedJson->data, [], Order::class);
+
+		foreach ($orders as $thisOrder) {
+			$thisOrder->setHydrated();
+		}
+
+		return $orders;
+	}
+
 	public static function getOrder(Client $client, int $orderId): Order {
 		$response = $client->makeRequest("orders/{$orderId}");
 
@@ -17,9 +63,9 @@ class OrderRequest {
 			return null;
 		}
 
-		$mapper = new JsonMapper();
+		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
-		$order  = $mapper->map($decodedJson->data, new Order());
+		$order                             = $mapper->map($decodedJson->data, new Order());
 		$order->setHydrated();
 
 		return $order;
@@ -38,7 +84,7 @@ class OrderRequest {
 
 		$orderItems = [];
 
-		$mapper = new JsonMapper();
+		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
 		foreach ($decodedJson->data as $thisBatchKey => $thisBatch) {
 			$orderItems[$thisBatchKey] = $mapper->mapArray($thisBatch, [], OrderItem::class);
