@@ -2,15 +2,13 @@
 
 namespace Kcfbricks\PhpBricklinkSdk\Inventory;
 
-use App\Api\BrickLink\Item\Item as CatalogueItem;
+use Kcfbricks\PhpBricklinkSdk\Item\Item as CatalogueItem;
 use DateTime;
 use Exception;
 use Kcfbricks\PhpBricklinkSdk\ApiObject;
 use ReflectionProperty;
 
 class Item extends ApiObject {
-	protected const PRICE_REMARK_PREFIX = "Pricing last updated ";
-
 	/**
 	 * The ID of the inventory
 	 */
@@ -195,22 +193,11 @@ class Item extends ApiObject {
 		return $this;
 	}
 
-	public function getNewOrUsed(): string {
-		//workaround for BrickLink's new/used field allowing a case insensitive save, but case sensitive when returning from the API
-		//all used items have been fixed so we can assume that anything missing this field is new
-		//trigger an error as well so we can look it up in the log
-		$rp = new ReflectionProperty($this, 'newOrUsed');
-		if (!$rp->isInitialized($this)) {
-			trigger_error(sprintf("Inventory item %s does not have a new or used flag", $this->getInventoryId()), E_USER_WARNING);
-
-			//assume new
-			$this->newOrUsed = "N";
-		}
-
+	public function getNewOrUsed(): Condition {
 		return $this->newOrUsed;
 	}
 
-	public function setNewOrUsed(string $newOrUsed): self {
+	public function setNewOrUsed(Condition $newOrUsed): self {
 		$this->setProperty('newOrUsed', $newOrUsed);
 
 		return $this;

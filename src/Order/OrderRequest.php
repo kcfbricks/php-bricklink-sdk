@@ -71,7 +71,7 @@ class OrderRequest {
 		return $order;
 	}
 
-	public static function getOrderItems($client, int $orderId): array {
+	public static function getOrderItems(Client $client, int $orderId): array {
 		$response = $client->makeRequest("orders/{$orderId}/items");
 
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
@@ -91,5 +91,37 @@ class OrderRequest {
 		}
 
 		return $orderItems;
+	}
+
+	public static function setOrderStatus(Client $client, Order $order): bool {
+		$client->makeRequest("orders/{$order->getOrderId()}/status", "PUT", [
+			'json' => [
+				'field' => 'status',
+				'value' => $order->getStatus()->value,
+			],
+		]);
+
+		//if there's an error, an exception will have been thrown
+		$order->clearDirtyField('status');
+		return true;
+	}
+
+	public static function updateOrderDetails(Client $client, Order $order): bool {
+		$submitFields = $order->getSubmitFields();
+
+		$client->makeRequest("orders/{$order->getOrderId()}", "PUT", [
+			'json' => $submitFields,
+		]);
+
+		//if there's an error, an exception will have been thrown
+		$order->clearDirtyField();
+		return true;
+	}
+
+	public static function sendDriveThru(Client $client, Order $order): bool {
+		$client->makeRequest("orders/{$order->getOrderId()}/drive_thru", "POST");
+
+		//if there's an error, an exception will have been thrown
+		return true;
 	}
 }
