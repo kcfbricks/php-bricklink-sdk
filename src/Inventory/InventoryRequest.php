@@ -12,7 +12,7 @@ class InventoryRequest {
 		ItemType|array|null $itemType = null,
 		string|array|null $status = null,
 		int|array|null $categoryId = null,
-		object|array|null $colour = null
+		object|array|null $colour = null //TODO: this needs to accept a proper colour object
 	): ?array {
 		$queryStringParameters = [];
 

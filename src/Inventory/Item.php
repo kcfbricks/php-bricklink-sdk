@@ -134,8 +134,6 @@ class Item extends ApiObject {
 	 */
 	protected float $myWeight;
 
-	protected ?DateTime $priceLastUpdatedDate = null;
-
 	/**
 	 * Keeps track of changes in quantity on this item before calling the API.
 	 *
@@ -389,16 +387,6 @@ class Item extends ApiObject {
 
 	public function setMyWeight(float $myWeight): self {
 		$this->setProperty('myWeight', $myWeight);
-
-		return $this;
-	}
-
-	public function getPriceLastUpdatedDate(): ?DateTime {
-		return $this->priceLastUpdatedDate;
-	}
-
-	public function setPriceLastUpdatedDate(DateTime $lastUpdatedDate): self {
-		$this->priceLastUpdatedDate = $lastUpdatedDate;
 
 		return $this;
 	}
