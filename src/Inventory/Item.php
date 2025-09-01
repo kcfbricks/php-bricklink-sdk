@@ -37,12 +37,12 @@ class Item extends ApiObject {
 	/**
 	 * Indicates whether the item is new or used. N: New, U: Used
 	 */
-	protected Condition $newOrUsed;
+	protected ?Condition $newOrUsed = null;
 
 	/**
 	 * Indicates whether the set is complete or incomplete (This value is valid only for SET type).
 	 */
-	protected Completeness $completeness;
+	protected ?Completeness $completeness = null;
 
 	/**
 	 * The original price of this item per sale unit
@@ -191,21 +191,21 @@ class Item extends ApiObject {
 		return $this;
 	}
 
-	public function getNewOrUsed(): Condition {
+	public function getNewOrUsed(): ?Condition {
 		return $this->newOrUsed;
 	}
 
-	public function setNewOrUsed(Condition $newOrUsed): self {
+	public function setNewOrUsed(?Condition $newOrUsed): self {
 		$this->setProperty('newOrUsed', $newOrUsed);
 
 		return $this;
 	}
 
-	public function getCompleteness(): Completeness {
+	public function getCompleteness(): ?Completeness {
 		return $this->completeness;
 	}
 
-	public function setCompleteness(Completeness $completeness): self {
+	public function setCompleteness(?Completeness $completeness): self {
 		$this->setProperty('completeness', $completeness);
 
 		return $this;
