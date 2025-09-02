@@ -19,4 +19,5 @@ enum OrderStatus: string {
 	case Nrs        = "NRS";
 	case Nss        = "NSS";
 	case Cancelled  = "CANCELLED";
+	case Purged     = "PURGED";
 }
