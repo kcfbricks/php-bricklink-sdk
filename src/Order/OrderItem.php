@@ -3,6 +3,8 @@
 namespace Kcfbricks\PhpBricklinkSdk\Order;
 
 use Kcfbricks\PhpBricklinkSdk\ApiObject;
+use Kcfbricks\PhpBricklinkSdk\Inventory\Completeness;
+use Kcfbricks\PhpBricklinkSdk\Inventory\Condition;
 use Kcfbricks\PhpBricklinkSdk\Item\Item;
 
 class OrderItem extends ApiObject {
@@ -34,12 +36,12 @@ class OrderItem extends ApiObject {
 	/**
 	 * Indicates whether the item is new or used
 	 */
-	protected string $newOrUsed;
+	protected Condition $newOrUsed;
 
 	/**
 	 * Indicates whether the set is complete or incomplete
 	 */
-	protected string $completeness;
+	protected ?Completeness $completeness = null;
 
 	/**
 	 * The original price of this item per sale unit
@@ -136,21 +138,21 @@ class OrderItem extends ApiObject {
 		return $this;
 	}
 
-	public function getNewOrUsed(): string {
+	public function getNewOrUsed(): ?Condition {
 		return $this->newOrUsed;
 	}
 
-	public function setNewOrUsed(string $newOrUsed): self {
+	public function setNewOrUsed(?Condition $newOrUsed): self {
 		$this->setProperty('newOrUsed', $newOrUsed);
 
 		return $this;
 	}
 
-	public function getCompleteness(): String {
+	public function getCompleteness(): ?Completeness {
 		return $this->completeness;
 	}
 
-	public function setCompleteness(String $completeness): self {
+	public function setCompleteness(?Completeness $completeness): self {
 		$this->setProperty('completeness', $completeness);
 
 		return $this;
@@ -232,6 +234,16 @@ class OrderItem extends ApiObject {
 
 	public function setDescription(string $description): self {
 		$this->setProperty('description', $description);
+
+		return $this;
+	}
+
+	public function getWeight(): ?float {
+		return $this->weight;
+	}
+
+	public function setWeight(?float $weight): self {
+		$this->setProperty('weight', $weight);
 
 		return $this;
 	}
