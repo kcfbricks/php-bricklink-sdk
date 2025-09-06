@@ -19,7 +19,7 @@ class InventoryRequest {
 		if ($itemType instanceof ItemType) {
 			$queryStringParameters['item_type'] = $itemType->value;
 		} elseif (is_array($itemType)) {
-			$queryStringParameters['item_type'] = implode(",", array_map(fn($thisItemType) => $thisItemType->value, $itemType));
+			$queryStringParameters['item_type'] = implode(",", array_map(fn ($thisItemType) => $thisItemType->value, $itemType));
 		}
 
 		if (is_string($status)) {
@@ -37,7 +37,7 @@ class InventoryRequest {
 		if (is_object($colour) && method_exists($colour, 'getBricklinkId')) {
 			$queryStringParameters['color_id'] = $colour->getBricklinkId();
 		} elseif (is_array($colour)) {
-			$queryStringParameters['color_id'] = implode(",", array_map(fn($thisColour) => $thisColour->getBricklinkId(), $colour));
+			$queryStringParameters['color_id'] = implode(",", array_map(fn ($thisColour) => $thisColour->getBricklinkId(), $colour));
 		}
 
 		$url = "inventories";
@@ -46,7 +46,7 @@ class InventoryRequest {
 			$url .= "?" . http_build_query($queryStringParameters);
 		}
 
-		$response = $client->makeRequest($url);
+		$response    = $client->makeRequest($url);
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
 		if (!isset($decodedJson->data)) {
@@ -55,14 +55,19 @@ class InventoryRequest {
 
 		//return the list of inventory items as decoded JSON
 		//if there's an error, an exception will have been thrown
-		$mapper = new JsonMapper();
+		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
 
-		$completenessCases = Completeness::cases();
-		//make sure the completeness is a valid value
+		$completenessValues = array_map(fn ($case) => $case->value, Completeness::cases());
+		$conditionValues    = array_map(fn ($case) => $case->value, Condition::cases());
+
+		//make sure enum values are valid before mapping
 		foreach ($decodedJson->data as $thisData) {
-			if (property_exists($thisData, 'completeness') && !in_array($thisData->completeness, $completenessCases)) {
-				unset($thisData->completeness);
+			if (property_exists($thisData, 'completeness') && !in_array($thisData->completeness, $completenessValues)) {
+				$thisData->completeness = null; // Nullable property
+			}
+			if (property_exists($thisData, 'new_or_used') && !in_array($thisData->new_or_used, $conditionValues)) {
+				$thisData->new_or_used = Condition::New->value; // Default to New condition
 			}
 		}
 
@@ -76,7 +81,7 @@ class InventoryRequest {
 	}
 
 	public static function getInventoryItem(Client $client, int $inventoryId): ?Item {
-		$response = $client->makeRequest("inventories/{$inventoryId}");
+		$response    = $client->makeRequest("inventories/{$inventoryId}");
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
 		//return the item as an InventoryItem object, or null if it does not exist
@@ -89,8 +94,20 @@ class InventoryRequest {
 			return null;
 		}
 
-		$mapper = new JsonMapper();
+		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
+
+		// Validate enum values before mapping
+		$completenessValues = array_map(fn ($case) => $case->value, Completeness::cases());
+		$conditionValues    = array_map(fn ($case) => $case->value, Condition::cases());
+
+		if (property_exists($decodedJson->data, 'completeness') && !in_array($decodedJson->data->completeness, $completenessValues)) {
+			$decodedJson->data->completeness = null; // Nullable property
+		}
+		if (property_exists($decodedJson->data, 'new_or_used') && !in_array($decodedJson->data->new_or_used, $conditionValues)) {
+			$decodedJson->data->new_or_used = Condition::New->value; // Default to New condition
+		}
+
 		$inventoryItem = $mapper->map($decodedJson->data, new Item());
 		$inventoryItem->setHydrated();
 
@@ -98,7 +115,7 @@ class InventoryRequest {
 	}
 
 	public static function updateInventoryItem(Client $client, Item $item): bool {
-		$submitFields = $item->getSubmitFields();
+		$submitFields   = $item->getSubmitFields();
 		$quantityChange = $item->getQuantityChange();
 		if ($quantityChange > 0) {
 			//add to the quantity

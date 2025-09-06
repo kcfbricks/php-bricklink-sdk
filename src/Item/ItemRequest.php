@@ -9,7 +9,7 @@ class ItemRequest {
 	public static function getCatalogueItem(Client $client, string $itemNumber, ?ItemType $itemType = null): ?Item {
 		$itemType = $itemType instanceof ItemType ? $itemType->value : "PART";
 
-		$response = $client->makeRequest("items/{$itemType}/{$itemNumber}");
+		$response    = $client->makeRequest("items/{$itemType}/{$itemNumber}");
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
 		//return the item as an Item object, or null if it does not exist
@@ -22,8 +22,16 @@ class ItemRequest {
 			return null;
 		}
 
-		$mapper = new JsonMapper();
+		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
+
+		// Validate enum values before mapping
+		$itemTypeValues = array_map(fn ($case) => $case->value, ItemType::cases());
+
+		if (property_exists($decodedJson->data, 'type') && !in_array($decodedJson->data->type, $itemTypeValues)) {
+			$decodedJson->data->type = ItemType::Part->value; // Default to PART
+		}
+
 		$item = $mapper->map($decodedJson->data, new Item());
 		$item->setHydrated();
 
@@ -34,7 +42,7 @@ class ItemRequest {
 		$itemType = $itemType instanceof ItemType ? $itemType->value : "PART";
 
 		try {
-			$response = $client->makeRequest("items/{$itemType}/{$itemNumber}/images/{$colour->getBricklinkId()}");
+			$response    = $client->makeRequest("items/{$itemType}/{$itemNumber}/images/{$colour->getBricklinkId()}");
 			$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 		} catch (\Exception) {
 			return null;
@@ -81,15 +89,15 @@ class ItemRequest {
 		}
 
 		try {
-			$response = $client->makeRequest($url);
+			$response    = $client->makeRequest($url);
 			$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 		} catch (\Exception) {
 			return null;
 		}
 
-		$mapper = new JsonMapper();
+		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
-		$subsets = $mapper->mapArray($decodedJson->data, [], Subset::class);
+		$subsets                           = $mapper->mapArray($decodedJson->data, [], Subset::class);
 
 		//explicitly map the entry list as the mapper above doesn't go into this
 		foreach ($subsets as $thisSubset) {
@@ -119,11 +127,11 @@ class ItemRequest {
 		}
 
 		$queryStringParameters['currency_code'] = "NZD";
-		$queryStringParameters['va'] = "N";
+		$queryStringParameters['va']            = "N";
 
 		try {
-			$url = "items/{$itemType->value}/{$itemNumber}/price?" . http_build_query($queryStringParameters);
-			$response = $client->makeRequest($url);
+			$url         = "items/{$itemType->value}/{$itemNumber}/price?" . http_build_query($queryStringParameters);
+			$response    = $client->makeRequest($url);
 			$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
 			//if there's an error, an exception will have been thrown
