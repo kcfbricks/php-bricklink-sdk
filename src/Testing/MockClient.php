@@ -1,90 +1,90 @@
 <?php
-declare(strict_types=1);
 
 namespace Kcfbricks\PhpBricklinkSdk\Testing;
 
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use Kcfbricks\PhpBricklinkSdk\Client;
+use Kcfbricks\PhpBricklinkSdk\Config;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * MockClient for testing BrickLink SDK without making real API calls
+ * Mock client for testing BrickLink API without making real requests
  */
 class MockClient extends Client {
 	private MockResponseProvider $responseProvider;
-	private array $requestLog = [];
+	private array $requests = [];
 
-	public function __construct(?MockResponseProvider $responseProvider = null) {
-		// Don't call parent constructor to avoid setting up real HTTP client
-		$this->responseProvider = $responseProvider ?? new MockResponseProvider();
+	public function __construct(MockResponseProvider $responseProvider) {
+		// Create a dummy config since we won't be making real requests
+		$dummyConfig = new Config('dummy', 'dummy', 'dummy', 'dummy');
+		parent::__construct($dummyConfig);
+
+		$this->responseProvider = $responseProvider;
 	}
 
 	/**
-	 * Override makeRequest to return mock responses instead of real API calls
+	 * Override the parent makeRequest method to use mock responses
 	 */
-	public function makeRequest(string $url, string $method = 'GET', array $options = []): ResponseInterface {
-		// Log the request for testing assertions
-		$this->requestLog[] = [
-			'url'       => $url,
+	public function makeRequest(string $url, string $method = "GET", array $options = []): ResponseInterface {
+		// Log the request for debugging
+		$this->requests[] = [
 			'method'    => $method,
+			'url'       => $url,
 			'options'   => $options,
 			'timestamp' => time(),
 		];
 
-		// Get mock response from provider
-		$mockResponse = $this->responseProvider->getResponse($url, $method, $options);
+		// Get mock response data
+		$responseData = $this->responseProvider->getResponse($url, $method, $options);
 
-		// Convert mock response to PSR-7 Response
-		return new Response(
-			$mockResponse['status']  ?? 200,
-			$mockResponse['headers'] ?? ['Content-Type' => 'application/json'],
-			json_encode($mockResponse['body'])
+		// Create HTTP response
+		$response = new Response(
+			$responseData['status']  ?? 200,
+			$responseData['headers'] ?? ['Content-Type' => 'application/json'],
+			json_encode($responseData['body'] ?? [])
 		);
+
+		// Simulate HTTP error responses by throwing exceptions
+		$statusCode = $response->getStatusCode();
+		if ($statusCode >= 400) {
+			$this->throwHttpException($statusCode, $response);
+		}
+
+		return $response;
 	}
 
 	/**
-	 * Get all requests made to this mock client (for testing assertions)
+	 * Throw appropriate exception based on HTTP status code
+	 */
+	private function throwHttpException(int $statusCode, ResponseInterface $response): void {
+		$message = "HTTP {$statusCode} error";
+
+		if ($statusCode >= 400 && $statusCode < 500) {
+			throw new ClientException($message, new \GuzzleHttp\Psr7\Request('GET', ''), $response);
+		}
+		throw new RequestException($message, new \GuzzleHttp\Psr7\Request('GET', ''), $response);
+	}
+
+	/**
+	 * Get all logged requests
+	 */
+	public function getRequests(): array {
+		return $this->requests;
+	}
+
+	/**
+	 * Get request log (alias for getRequests for backward compatibility)
 	 */
 	public function getRequestLog(): array {
-		return $this->requestLog;
+		return $this->requests;
 	}
 
 	/**
-	 * Clear the request log
+	 * Clear request log
 	 */
-	public function clearRequestLog(): void {
-		$this->requestLog = [];
-	}
-
-	/**
-	 * Check if a specific request was made
-	 */
-	public function wasRequestMade(string $url, string $method = 'GET'): bool {
-		foreach ($this->requestLog as $request) {
-			if ($request['url'] === $url && $request['method'] === $method) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Get the number of requests made to a specific endpoint
-	 */
-	public function getRequestCount(string $url, string $method = 'GET'): int {
-		$count = 0;
-		foreach ($this->requestLog as $request) {
-			if ($request['url'] === $url && $request['method'] === $method) {
-				$count++;
-			}
-		}
-		return $count;
-	}
-
-	/**
-	 * Set a custom response provider
-	 */
-	public function setResponseProvider(MockResponseProvider $provider): void {
-		$this->responseProvider = $provider;
+	public function clearRequests(): void {
+		$this->requests = [];
 	}
 }

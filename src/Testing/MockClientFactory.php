@@ -248,6 +248,154 @@ class MockClientFactory {
 	}
 
 	/**
+	 * Create a mock client with invalid enum values to test enum validation
+	 */
+	public static function createWithInvalidEnums(int $orderId = 12345): MockClient {
+		$provider = new MockResponseProvider(false);
+
+		// Order with invalid status
+		$provider->setCustomResponse("orders/{$orderId}", [
+			'status' => 200,
+			'body'   => [
+				'meta' => [
+					'description' => 'OK',
+					'code'        => 200,
+				],
+				'data' => [
+					'order_id'            => $orderId,
+					'date_ordered'        => '2024-01-15T10:30:00.000Z',
+					'date_status_changed' => '2024-01-15T10:30:00.000Z',
+					'seller_name'         => 'testseller',
+					'store_name'          => 'Test Store',
+					'buyer_name'          => 'TestBuyer',
+					'buyer_email'         => 'buyer@example.com',
+					'buyer_order_count'   => 1,
+					'status'              => 'INVALID_STATUS', // Invalid enum value
+					'total_count'         => 5,
+					'unique_count'        => 3,
+					'total_weight'        => '25.0',
+					'base_grand_total'    => '10.00',
+					'grand_total'         => '15.00',
+					'payment'             => [
+						'method'        => 'PayPal',
+						'currency_code' => 'USD',
+						'date_paid'     => null,
+						'status'        => 'INVALID_PAYMENT_STATUS', // Invalid enum value
+					],
+				],
+			],
+		]);
+
+		// Order items with invalid enum values
+		$provider->setCustomResponse("orders/{$orderId}/items", [
+			'status' => 200,
+			'body'   => [
+				'meta' => [
+					'description' => 'OK',
+					'code'        => 200,
+				],
+				'data' => [
+					'0' => [
+						[
+							'inventory_id' => 111111,
+							'item'         => [
+								'no'          => '3001',
+								'name'        => 'Brick 2 x 4',
+								'type'        => 'INVALID_TYPE', // Invalid enum value
+								'category_id' => 5,
+							],
+							'color_id'              => 5,
+							'color_name'            => 'Red',
+							'quantity'              => 10,
+							'new_or_used'           => 'INVALID_CONDITION', // Invalid enum value
+							'completeness'          => 'INVALID_COMPLETENESS', // Invalid enum value
+							'unit_price'            => '0.15',
+							'unit_price_final'      => '0.15',
+							'disp_unit_price'       => 'US $0.15',
+							'disp_unit_price_final' => 'US $0.15',
+							'currency_code'         => 'USD',
+							'description'           => 'Test item with invalid enums',
+							'remarks'               => '',
+						],
+					],
+				],
+			],
+		]);
+
+		// Inventory item with invalid enum values
+		$provider->setCustomResponse("inventories/111111", [
+			'status' => 200,
+			'body'   => [
+				'meta' => [
+					'description' => 'OK',
+					'code'        => 200,
+				],
+				'data' => [
+					'inventory_id' => 111111,
+					'item'         => [
+						'no'          => '3001',
+						'name'        => 'Brick 2 x 4',
+						'type'        => 'PART',
+						'category_id' => 5,
+					],
+					'color_id'              => 5,
+					'color_name'            => 'Red',
+					'quantity'              => 10,
+					'new_or_used'           => 'INVALID_CONDITION', // Invalid enum value
+					'completeness'          => 'INVALID_COMPLETENESS', // Invalid enum value
+					'unit_price'            => '0.15',
+					'unit_price_final'      => '0.15',
+					'disp_unit_price'       => 'US $0.15',
+					'disp_unit_price_final' => 'US $0.15',
+					'currency_code'         => 'USD',
+					'description'           => 'Test item with invalid enums',
+					'remarks'               => '',
+				],
+			],
+		]);
+
+		// Catalogue item with invalid enum value
+		$provider->setCustomResponse("items/PART/3001", [
+			'status' => 200,
+			'body'   => [
+				'meta' => [
+					'description' => 'OK',
+					'code'        => 200,
+				],
+				'data' => [
+					'no'          => '3001',
+					'name'        => 'Brick 2 x 4',
+					'type'        => 'INVALID_TYPE', // Invalid enum value
+					'category_id' => 5,
+				],
+			],
+		]);
+
+		// Feedback with invalid enum values
+		$provider->setCustomResponse("orders/{$orderId}/feedback", [
+			'status' => 200,
+			'body'   => [
+				'meta' => [
+					'description' => 'OK',
+					'code'        => 200,
+				],
+				'data' => [
+					[
+						'order_id'      => $orderId,
+						'comment'       => 'Test feedback',
+						'comment_reply' => '',
+						'rating'        => 999, // Invalid enum value
+						'rating_of_bs'  => 'INVALID_RATING', // Invalid enum value
+						'date_created'  => '2024-01-15T10:30:00.000Z',
+					],
+				],
+			],
+		]);
+
+		return new MockClient($provider);
+	}
+
+	/**
 	 * Create a custom mock client with your own response provider
 	 */
 	public static function createCustom(MockResponseProvider $provider): MockClient {
