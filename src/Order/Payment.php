@@ -19,7 +19,7 @@ class Payment extends ApiObject {
 	/**
 	 * The time the buyer paid
 	 */
-	protected DateTime $datePaid;
+	protected ?DateTime $datePaid;
 
 	/**
 	 * Status of the payment
@@ -46,11 +46,11 @@ class Payment extends ApiObject {
 		return $this;
 	}
 
-	public function getDatePaid(): DateTime {
+	public function getDatePaid(): ?DateTime {
 		return $this->datePaid;
 	}
 
-	public function setDatePaid(DateTime $datePaid): self {
+	public function setDatePaid(?DateTime $datePaid): self {
 		$this->setProperty('datePaid', $datePaid);
 
 		return $this;

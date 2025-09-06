@@ -76,11 +76,11 @@ class Shipping extends ApiObject {
 		return $this;
 	}
 
-	public function getDateShipped(): DateTime {
+	public function getDateShipped(): ?DateTime {
 		return $this->dateShipped;
 	}
 
-	public function setDateShipped(DateTime $dateShipped): self {
+	public function setDateShipped(?DateTime $dateShipped): self {
 		$this->setProperty('dateShipped', $dateShipped);
 
 		return $this;
