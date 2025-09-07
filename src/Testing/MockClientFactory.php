@@ -79,7 +79,7 @@ class MockClientFactory {
 					'buyer_email'         => 'customer@example.com',
 					'buyer_order_count'   => 1,
 					'require_insurance'   => false,
-					'status'              => 'RECEIVED',
+					'status'              => 'PENDING',
 					'is_invoiced'         => false,
 					'is_filed'            => false,
 					'drive_thru_sent'     => false,
@@ -88,7 +88,7 @@ class MockClientFactory {
 					'unique_count'        => 3,
 					'total_weight'        => '15.0',
 					'payment' => [
-						'method'        => 'None',
+						'method'        => 'Bank Transfer',
 						'currency_code' => 'NZD',
 						'date_paid'     => null,
 						'status'        => 'None',
@@ -102,6 +102,7 @@ class MockClientFactory {
 						'address'      => [
 							'name' => [
 								'full'  => 'Test Customer',
+								'first' => 'Test',
 								'last'  => 'Customer',
 							],
 							'full'         => '123 Queen Street\nAuckland, AUK 1010\nNew Zealand',
