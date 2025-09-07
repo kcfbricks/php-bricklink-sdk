@@ -105,41 +105,6 @@ $provider->setCustomResponse('orders/12345/items', [
 $mockClient = MockClientFactory::createCustom($provider);
 ```
 
-## Integration with Your App
-
-### In composer.json
-To use mock responses in development/testing, you can modify your app's dependency injection:
-
-```php
-// In your service configuration or bootstrap
-$client = $_ENV['APP_ENV'] === 'test'
-    ? MockClientFactory::createWithRealisticData()
-    : new Client($consumerKey, $consumerSecret, $token, $tokenSecret);
-```
-
-### In CakePHP Application
-```php
-// In your OrderService or wherever you use the BrickLink client
-public function __construct(?Client $brickLinkClient = null)
-{
-    $this->brickLinkClient = $brickLinkClient ?? $this->createClient();
-}
-
-private function createClient(): Client
-{
-    if (Configure::read('App.environment') === 'test') {
-        return MockClientFactory::createForKcfBricksOrder();
-    }
-
-    return new Client(
-        Configure::read('BrickLink.consumer_key'),
-        Configure::read('BrickLink.consumer_secret'),
-        Configure::read('BrickLink.token'),
-        Configure::read('BrickLink.token_secret')
-    );
-}
-```
-
 ## Request Logging and Assertions
 
 The mock client logs all requests for testing assertions:
