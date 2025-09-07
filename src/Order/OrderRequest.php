@@ -169,6 +169,20 @@ class OrderRequest {
 		return true;
 	}
 
+	public static function setPaymentStatus(Client $client, Order $order): bool {
+		$orderPayment = $order->getPayment();
+		$client->makeRequest("orders/{$order->getOrderId()}/payment_status", "PUT", [
+			'json' => [
+				'field' => 'status',
+				'value' => $orderPayment->getStatus()->value,
+			],
+		]);
+
+		//if there's an error, an exception will have been thrown
+		$orderPayment->clearDirtyField('status');
+		return true;
+	}
+
 	public static function updateOrderDetails(Client $client, Order $order): bool {
 		$submitFields = $order->getSubmitFields();
 
