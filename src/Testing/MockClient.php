@@ -87,4 +87,11 @@ class MockClient extends Client {
 	public function clearRequests(): void {
 		$this->requests = [];
 	}
+
+	/**
+	 * Get the mock response provider for customization
+	 */
+	public function getResponseProvider(): MockResponseProvider {
+		return $this->responseProvider;
+	}
 }
