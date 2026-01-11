@@ -19,7 +19,7 @@ class Payment extends ApiObject {
 	/**
 	 * The time the buyer paid
 	 */
-	protected ?DateTime $datePaid;
+	protected ?DateTime $datePaid = null;
 
 	/**
 	 * Status of the payment
