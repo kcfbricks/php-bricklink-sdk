@@ -65,7 +65,7 @@ class OrderRequest {
 			}
 		}
 
-		$orders                            = $mapper->mapArray($decodedJson->data, [], Order::class);
+		$orders = $mapper->mapArray($decodedJson->data, [], Order::class);
 
 		foreach ($orders as $thisOrder) {
 			$thisOrder->setHydrated();
