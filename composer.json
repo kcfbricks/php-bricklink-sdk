@@ -5,7 +5,7 @@
     "require": {
         "guzzlehttp/guzzle": "^7.10",
         "guzzlehttp/oauth-subscriber": "^0.8.1",
-        "netresearch/jsonmapper": "^5.0"
+        "netresearch/jsonmapper": "^5.0.1"
     },
     "autoload": {
         "psr-4": {
