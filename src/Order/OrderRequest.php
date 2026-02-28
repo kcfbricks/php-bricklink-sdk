@@ -173,7 +173,7 @@ class OrderRequest {
 		$orderPayment = $order->getPayment();
 		$client->makeRequest("orders/{$order->getOrderId()}/payment_status", "PUT", [
 			'json' => [
-				'field' => 'status',
+				'field' => 'payment_status',
 				'value' => $orderPayment->getStatus()->value,
 			],
 		]);
