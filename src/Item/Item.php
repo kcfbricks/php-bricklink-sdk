@@ -2,8 +2,8 @@
 
 namespace Kcfbricks\PhpBricklinkSdk\Item;
 
-use Kcfbricks\PhpBricklinkSdk\ApiObject;
 use JsonSerializable;
+use Kcfbricks\PhpBricklinkSdk\ApiObject;
 
 class Item extends ApiObject implements JsonSerializable {
 	/**

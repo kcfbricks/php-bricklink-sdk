@@ -8,10 +8,8 @@ namespace Kcfbricks\PhpBricklinkSdk\Testing;
  */
 class MockResponseProvider {
 	private array $customResponses = [];
-	private bool $useRealisticData = true;
 
-	public function __construct(bool $useRealisticData = true) {
-		$this->useRealisticData = $useRealisticData;
+	public function __construct(private readonly bool $useRealisticData = true) {
 	}
 
 	/**
@@ -20,12 +18,9 @@ class MockResponseProvider {
 	public function getResponse(string $url, string $method = 'GET', array $options = []): array {
 		// Check for custom responses first
 		$key = strtoupper($method) . ' ' . $url;
-		if (isset($this->customResponses[$key])) {
-			return $this->customResponses[$key];
-		}
 
 		// Generate default responses based on endpoint
-		return $this->generateDefaultResponse($url, $method, $options);
+		return $this->customResponses[$key] ?? $this->generateDefaultResponse($url, $method);
 	}
 
 	/**
@@ -46,7 +41,7 @@ class MockResponseProvider {
 	/**
 	 * Generate default mock responses based on URL patterns
 	 */
-	private function generateDefaultResponse(string $url, string $method, array $options): array {
+	private function generateDefaultResponse(string $url, string $method): array {
 		// Orders list endpoint
 		if (preg_match('/^orders(\?.*)?$/', $url)) {
 			return $this->getOrdersListResponse();
@@ -61,7 +56,7 @@ class MockResponseProvider {
 		// Order items endpoint
 		if (preg_match('/^orders\/(\d+)\/items$/', $url, $matches)) {
 			$orderId = (int)$matches[1];
-			return $this->getOrderItemsResponse($orderId);
+			return $this->getOrderItemsResponse();
 		}
 
 		// Order status update
@@ -134,19 +129,19 @@ class MockResponseProvider {
 						'total_count'         => 23,
 						'unique_count'        => 3,
 						'total_weight'        => '14.2',
-						'payment' => [
+						'payment'             => [
 							'method'        => 'PayPal',
 							'currency_code' => 'USD',
 							'date_paid'     => '2024-01-15T11:00:00.000Z',
 							'status'        => 'Received',
 						],
 						'shipping' => [
-							'method'       => 'Standard Mail',
-							'method_id'    => '17862',
-							'tracking_no'  => '',
+							'method'        => 'Standard Mail',
+							'method_id'     => '17862',
+							'tracking_no'   => '',
 							'tracking_link' => '',
-							'date_shipped' => null,
-							'address'      => [
+							'date_shipped'  => null,
+							'address'       => [
 								'name' => [
 									'full'  => 'Test Buyer',
 									'first' => 'Test',
@@ -163,19 +158,19 @@ class MockResponseProvider {
 							],
 						],
 						'cost' => [
-							'currency_code' => 'USD',
-							'subtotal'      => '1.17',
-							'grand_total'   => '8.42',
+							'currency_code'            => 'USD',
+							'subtotal'                 => '1.17',
+							'grand_total'              => '8.42',
 							'salesTax_collected_by_BL' => '0.00',
-							'final_total'   => '8.42',
-							'etc1'          => '0.00',
-							'etc2'          => '0.00',
-							'insurance'     => '2.25',
-							'shipping'      => '5.00',
-							'credit'        => '0.00',
-							'coupon'        => '0.00',
-							'vat_rate'      => '0.00',
-							'vat_amount'    => '0.00',
+							'final_total'              => '8.42',
+							'etc1'                     => '0.00',
+							'etc2'                     => '0.00',
+							'insurance'                => '2.25',
+							'shipping'                 => '5.00',
+							'credit'                   => '0.00',
+							'coupon'                   => '0.00',
+							'vat_rate'                 => '0.00',
+							'vat_amount'               => '0.00',
 						],
 						'disp_cost' => [
 							'currency_code' => 'USD',
@@ -235,7 +230,7 @@ class MockResponseProvider {
 	/**
 	 * Generate mock order items response
 	 */
-	private function getOrderItemsResponse(int $orderId): array {
+	private function getOrderItemsResponse(): array {
 		if (!$this->useRealisticData) {
 			return [
 				'status' => 200,

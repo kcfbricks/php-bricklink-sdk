@@ -2,8 +2,8 @@
 
 namespace Kcfbricks\PhpBricklinkSdk\Order;
 
-use Kcfbricks\PhpBricklinkSdk\ApiObject;
 use DateTime;
+use Kcfbricks\PhpBricklinkSdk\ApiObject;
 
 class Payment extends ApiObject {
 	/**

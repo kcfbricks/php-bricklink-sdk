@@ -78,10 +78,10 @@ class SubsetEntry extends ApiObject {
 	}
 
 	public function getImageUrl(): ?string {
-		return "https://img.bricklink.com/ItemImage/" . urlencode($this->getItem()->getType()->value[0]) . "N/" . urlencode($this->getColorId() ?? "0") . "/" . urlencode($this->getItem()->getNo()) . ".png";
+		return "https://img.bricklink.com/ItemImage/" . urlencode($this->getItem()->getType()->value[0]) . "N/" . urlencode((string) ($this->getColorId() ?? "0")) . "/" . urlencode($this->getItem()->getNo()) . ".png";
 	}
 
 	public function getImageThumbnail(): ?string {
-		return "https://img.bricklink.com/ItemImage/" . urlencode($this->getItem()->getType()->value[0]) . "T/" . urlencode($this->getColorId() ?? "0") . "/" . urlencode($this->getItem()->getNo()) . ".t1.png";
+		return "https://img.bricklink.com/ItemImage/" . urlencode($this->getItem()->getType()->value[0]) . "T/" . urlencode((string) ($this->getColorId() ?? "0")) . "/" . urlencode($this->getItem()->getNo()) . ".t1.png";
 	}
 }

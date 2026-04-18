@@ -42,7 +42,7 @@ class InventoryRequest {
 
 		$url = "inventories";
 
-		if ($queryStringParameters) {
+		if ($queryStringParameters !== []) {
 			$url .= "?" . http_build_query($queryStringParameters);
 		}
 
@@ -58,14 +58,15 @@ class InventoryRequest {
 		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
 
-		$completenessValues = array_map(fn ($case) => $case->value, Completeness::cases());
-		$conditionValues    = array_map(fn ($case) => $case->value, Condition::cases());
+		$completenessValues = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Inventory\Completeness $case) => $case->value, Completeness::cases());
+		$conditionValues    = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Inventory\Condition $case) => $case->value, Condition::cases());
 
 		//make sure enum values are valid before mapping
 		foreach ($decodedJson->data as $thisData) {
 			if (property_exists($thisData, 'completeness') && !in_array($thisData->completeness, $completenessValues)) {
 				$thisData->completeness = null; // Nullable property
 			}
+
 			if (property_exists($thisData, 'new_or_used') && !in_array($thisData->new_or_used, $conditionValues)) {
 				$thisData->new_or_used = Condition::New->value; // Default to New condition
 			}
@@ -81,7 +82,7 @@ class InventoryRequest {
 	}
 
 	public static function getInventoryItem(Client $client, int $inventoryId): ?Item {
-		$response    = $client->makeRequest("inventories/{$inventoryId}");
+		$response    = $client->makeRequest('inventories/' . $inventoryId);
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
 		//return the item as an InventoryItem object, or null if it does not exist
@@ -90,7 +91,7 @@ class InventoryRequest {
 			return null;
 		}
 
-		if (count(get_object_vars($decodedJson->data)) == 0) {
+		if (get_object_vars($decodedJson->data) === []) {
 			return null;
 		}
 
@@ -98,12 +99,13 @@ class InventoryRequest {
 		$mapper->bStrictObjectTypeChecking = false;
 
 		// Validate enum values before mapping
-		$completenessValues = array_map(fn ($case) => $case->value, Completeness::cases());
-		$conditionValues    = array_map(fn ($case) => $case->value, Condition::cases());
+		$completenessValues = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Inventory\Completeness $case) => $case->value, Completeness::cases());
+		$conditionValues    = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Inventory\Condition $case) => $case->value, Condition::cases());
 
 		if (property_exists($decodedJson->data, 'completeness') && !in_array($decodedJson->data->completeness, $completenessValues)) {
 			$decodedJson->data->completeness = null; // Nullable property
 		}
+
 		if (property_exists($decodedJson->data, 'new_or_used') && !in_array($decodedJson->data->new_or_used, $conditionValues)) {
 			$decodedJson->data->new_or_used = Condition::New->value; // Default to New condition
 		}
@@ -126,7 +128,7 @@ class InventoryRequest {
 			$submitFields['quantity'] = strval($quantityChange);
 		}
 
-		$client->makeRequest("inventories/{$item->getInventoryId()}", "PUT", [
+		$client->makeRequest('inventories/' . $item->getInventoryId(), "PUT", [
 			'json' => $submitFields,
 		]);
 
@@ -137,7 +139,7 @@ class InventoryRequest {
 
 	public static function deleteInventoryItem(Client $client, Item $item): bool {
 		try {
-			$client->makeRequest("inventories/{$item->getInventoryId()}", "DELETE");
+			$client->makeRequest('inventories/' . $item->getInventoryId(), "DELETE");
 			return true;
 		} catch (\Exception) {
 			return false;

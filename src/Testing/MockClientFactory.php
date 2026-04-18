@@ -62,7 +62,7 @@ class MockClientFactory {
 		$provider = new MockResponseProvider(true);
 
 		// Customize the order response to match KCF Bricks scenario
-		$provider->setCustomResponse("orders/{$orderId}", [
+		$provider->setCustomResponse('orders/' . $orderId, [
 			'status' => 200,
 			'body'   => [
 				'meta' => [
@@ -87,19 +87,19 @@ class MockClientFactory {
 					'total_count'         => 45,
 					'unique_count'        => 3,
 					'total_weight'        => '15.0',
-					'payment' => [
+					'payment'             => [
 						'method'        => 'Bank Transfer',
 						'currency_code' => 'NZD',
 						'date_paid'     => null,
 						'status'        => 'None',
 					],
 					'shipping' => [
-						'method'       => 'Standard Post',
-						'method_id'    => '12345',
-						'tracking_no'  => '',
+						'method'        => 'Standard Post',
+						'method_id'     => '12345',
+						'tracking_no'   => '',
 						'tracking_link' => '',
-						'date_shipped' => null,
-						'address'      => [
+						'date_shipped'  => null,
+						'address'       => [
 							'name' => [
 								'full'  => 'Test Customer',
 								'first' => 'Test',
@@ -116,19 +116,19 @@ class MockClientFactory {
 						],
 					],
 					'cost' => [
-						'currency_code' => 'NZD',
-						'subtotal'      => '4.60',
-						'grand_total'   => '12.10',
+						'currency_code'            => 'NZD',
+						'subtotal'                 => '4.60',
+						'grand_total'              => '12.10',
 						'salesTax_collected_by_BL' => '0.00',
-						'final_total'   => '12.10',
-						'etc1'          => '0.00',
-						'etc2'          => '0.00',
-						'insurance'     => '0.00',
-						'shipping'      => '7.50',
-						'credit'        => '0.00',
-						'coupon'        => '0.00',
-						'vat_rate'      => '0.00',
-						'vat_amount'    => '0.00',
+						'final_total'              => '12.10',
+						'etc1'                     => '0.00',
+						'etc2'                     => '0.00',
+						'insurance'                => '0.00',
+						'shipping'                 => '7.50',
+						'credit'                   => '0.00',
+						'coupon'                   => '0.00',
+						'vat_rate'                 => '0.00',
+						'vat_amount'               => '0.00',
 					],
 					'disp_cost' => [
 						'currency_code' => 'NZD',
@@ -148,7 +148,7 @@ class MockClientFactory {
 		]);
 
 		// Customize order items to include New Zealand-relevant LEGO parts
-		$provider->setCustomResponse("orders/{$orderId}/items", [
+		$provider->setCustomResponse(sprintf('orders/%d/items', $orderId), [
 			'status' => 200,
 			'body'   => [
 				'meta' => [
@@ -242,7 +242,7 @@ class MockClientFactory {
 	public static function createWithPurgedOrder(int $orderId = 99999): MockClient {
 		$provider = new MockResponseProvider(false);
 
-		$provider->setCustomResponse("orders/{$orderId}", [
+		$provider->setCustomResponse('orders/' . $orderId, [
 			'status' => 404,
 			'body'   => [
 				'meta' => [
@@ -253,7 +253,7 @@ class MockClientFactory {
 			],
 		]);
 
-		$provider->setCustomResponse("orders/{$orderId}/items", [
+		$provider->setCustomResponse(sprintf('orders/%d/items', $orderId), [
 			'status' => 404,
 			'body'   => [
 				'meta' => [
@@ -274,7 +274,7 @@ class MockClientFactory {
 		$provider = new MockResponseProvider(false);
 
 		// Order with invalid status
-		$provider->setCustomResponse("orders/{$orderId}", [
+		$provider->setCustomResponse('orders/' . $orderId, [
 			'status' => 200,
 			'body'   => [
 				'meta' => [
@@ -307,7 +307,7 @@ class MockClientFactory {
 		]);
 
 		// Order items with invalid enum values
-		$provider->setCustomResponse("orders/{$orderId}/items", [
+		$provider->setCustomResponse(sprintf('orders/%d/items', $orderId), [
 			'status' => 200,
 			'body'   => [
 				'meta' => [
@@ -392,7 +392,7 @@ class MockClientFactory {
 		]);
 
 		// Feedback with invalid enum values
-		$provider->setCustomResponse("orders/{$orderId}/feedback", [
+		$provider->setCustomResponse(sprintf('orders/%d/feedback', $orderId), [
 			'status' => 200,
 			'body'   => [
 				'meta' => [

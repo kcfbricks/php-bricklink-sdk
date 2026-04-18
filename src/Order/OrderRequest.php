@@ -17,7 +17,7 @@ class OrderRequest {
 	): ?array {
 		$queryStringParameters = [];
 
-		if ($direction) {
+		if ($direction instanceof \Kcfbricks\PhpBricklinkSdk\Order\OrderDirection) {
 			$queryStringParameters['direction'] = $direction->value;
 		}
 
@@ -31,7 +31,7 @@ class OrderRequest {
 
 		$url = "orders";
 
-		if ($queryStringParameters) {
+		if ($queryStringParameters !== []) {
 			$url .= "?" . http_build_query($queryStringParameters);
 		}
 
@@ -48,8 +48,8 @@ class OrderRequest {
 		$mapper->bStrictObjectTypeChecking = false;
 
 		// Validate enum values before mapping
-		$orderStatusValues   = array_map(fn ($case) => $case->value, OrderStatus::cases());
-		$paymentStatusValues = array_map(fn ($case) => $case->value, PaymentStatus::cases());
+		$orderStatusValues   = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Order\OrderStatus $case) => $case->value, OrderStatus::cases());
+		$paymentStatusValues = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Order\PaymentStatus $case) => $case->value, PaymentStatus::cases());
 
 		foreach ($decodedJson->data as $thisOrderData) {
 			// Validate main order status - use PENDING as default for invalid values
@@ -58,10 +58,8 @@ class OrderRequest {
 			}
 
 			// Validate payment status if payment object exists - use None as default
-			if (property_exists($thisOrderData, 'payment') && is_object($thisOrderData->payment)) {
-				if (property_exists($thisOrderData->payment, 'status') && !in_array($thisOrderData->payment->status, $paymentStatusValues)) {
-					$thisOrderData->payment->status = PaymentStatus::None->value;
-				}
+			if (property_exists($thisOrderData, 'payment') && is_object($thisOrderData->payment) && (property_exists($thisOrderData->payment, 'status') && !in_array($thisOrderData->payment->status, $paymentStatusValues))) {
+				$thisOrderData->payment->status = PaymentStatus::None->value;
 			}
 		}
 
@@ -75,7 +73,7 @@ class OrderRequest {
 	}
 
 	public static function getOrder(Client $client, int $orderId): ?Order {
-		$response = $client->makeRequest("orders/{$orderId}");
+		$response = $client->makeRequest('orders/' . $orderId);
 
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
@@ -89,8 +87,8 @@ class OrderRequest {
 		$mapper->bStrictObjectTypeChecking = false;
 
 		// Validate enum values before mapping
-		$orderStatusValues   = array_map(fn ($case) => $case->value, OrderStatus::cases());
-		$paymentStatusValues = array_map(fn ($case) => $case->value, PaymentStatus::cases());
+		$orderStatusValues   = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Order\OrderStatus $case) => $case->value, OrderStatus::cases());
+		$paymentStatusValues = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Order\PaymentStatus $case) => $case->value, PaymentStatus::cases());
 
 		// Validate main order status - use PENDING as default for invalid values
 		if (property_exists($decodedJson->data, 'status') && !in_array($decodedJson->data->status, $orderStatusValues)) {
@@ -98,10 +96,8 @@ class OrderRequest {
 		}
 
 		// Validate payment status if payment object exists - use None as default
-		if (property_exists($decodedJson->data, 'payment') && is_object($decodedJson->data->payment)) {
-			if (property_exists($decodedJson->data->payment, 'status') && !in_array($decodedJson->data->payment->status, $paymentStatusValues)) {
-				$decodedJson->data->payment->status = PaymentStatus::None->value;
-			}
+		if (property_exists($decodedJson->data, 'payment') && is_object($decodedJson->data->payment) && (property_exists($decodedJson->data->payment, 'status') && !in_array($decodedJson->data->payment->status, $paymentStatusValues))) {
+			$decodedJson->data->payment->status = PaymentStatus::None->value;
 		}
 
 		$order                             = $mapper->map($decodedJson->data, new Order());
@@ -111,7 +107,7 @@ class OrderRequest {
 	}
 
 	public static function getOrderItems(Client $client, int $orderId): array {
-		$response = $client->makeRequest("orders/{$orderId}/items");
+		$response = $client->makeRequest(sprintf('orders/%d/items', $orderId));
 
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
@@ -127,9 +123,9 @@ class OrderRequest {
 		$mapper->bStrictObjectTypeChecking = false;
 
 		// Validate enum values for order items before mapping
-		$conditionValues    = array_map(fn ($case) => $case->value, Condition::cases());
-		$completenessValues = array_map(fn ($case) => $case->value, Completeness::cases());
-		$itemTypeValues     = array_map(fn ($case) => $case->value, ItemType::cases());
+		$conditionValues    = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Inventory\Condition $case) => $case->value, Condition::cases());
+		$completenessValues = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Inventory\Completeness $case) => $case->value, Completeness::cases());
+		$itemTypeValues     = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Item\ItemType $case) => $case->value, ItemType::cases());
 
 		foreach ($decodedJson->data as $thisBatchKey => $thisBatch) {
 			// Validate each item in the batch
@@ -138,15 +134,15 @@ class OrderRequest {
 				if (property_exists($thisItemData, 'new_or_used') && !in_array($thisItemData->new_or_used, $conditionValues)) {
 					$thisItemData->new_or_used = Condition::New->value; // Default to New condition
 				}
+
 				if (property_exists($thisItemData, 'completeness') && !in_array($thisItemData->completeness, $completenessValues)) {
 					$thisItemData->completeness = null; // Nullable property
 				}
 
 				// Validate nested item object enums
-				if (property_exists($thisItemData, 'item') && is_object($thisItemData->item)) {
-					if (property_exists($thisItemData->item, 'type') && !in_array($thisItemData->item->type, $itemTypeValues)) {
-						$thisItemData->item->type = ItemType::Part->value; // Default to PART
-					}
+				if (property_exists($thisItemData, 'item') && is_object($thisItemData->item) && (property_exists($thisItemData->item, 'type') && !in_array($thisItemData->item->type, $itemTypeValues))) {
+					$thisItemData->item->type = ItemType::Part->value;
+					// Default to PART
 				}
 			}
 
@@ -157,7 +153,7 @@ class OrderRequest {
 	}
 
 	public static function setOrderStatus(Client $client, Order $order): bool {
-		$client->makeRequest("orders/{$order->getOrderId()}/status", "PUT", [
+		$client->makeRequest(sprintf('orders/%d/status', $order->getOrderId()), "PUT", [
 			'json' => [
 				'field' => 'status',
 				'value' => $order->getStatus()->value,
@@ -171,7 +167,7 @@ class OrderRequest {
 
 	public static function setPaymentStatus(Client $client, Order $order): bool {
 		$orderPayment = $order->getPayment();
-		$client->makeRequest("orders/{$order->getOrderId()}/payment_status", "PUT", [
+		$client->makeRequest(sprintf('orders/%d/payment_status', $order->getOrderId()), "PUT", [
 			'json' => [
 				'field' => 'payment_status',
 				'value' => $orderPayment->getStatus()->value,
@@ -186,7 +182,7 @@ class OrderRequest {
 	public static function updateOrderDetails(Client $client, Order $order): bool {
 		$submitFields = $order->getSubmitFields();
 
-		$client->makeRequest("orders/{$order->getOrderId()}", "PUT", [
+		$client->makeRequest('orders/' . $order->getOrderId(), "PUT", [
 			'json' => $submitFields,
 		]);
 
@@ -196,7 +192,7 @@ class OrderRequest {
 	}
 
 	public static function sendDriveThru(Client $client, Order $order): bool {
-		$client->makeRequest("orders/{$order->getOrderId()}/drive_thru", "POST");
+		$client->makeRequest(sprintf('orders/%d/drive_thru', $order->getOrderId()), "POST");
 
 		//if there's an error, an exception will have been thrown
 		return true;

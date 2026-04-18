@@ -2,11 +2,9 @@
 
 namespace Kcfbricks\PhpBricklinkSdk\Inventory;
 
-use Kcfbricks\PhpBricklinkSdk\Item\Item as CatalogueItem;
 use DateTime;
-use Exception;
 use Kcfbricks\PhpBricklinkSdk\ApiObject;
-use ReflectionProperty;
+use Kcfbricks\PhpBricklinkSdk\Item\Item as CatalogueItem;
 
 class Item extends ApiObject {
 	/**
@@ -136,8 +134,6 @@ class Item extends ApiObject {
 
 	/**
 	 * Keeps track of changes in quantity on this item before calling the API.
-	 *
-	 * @var integer
 	 */
 	protected int $quantityChange = 0;
 
@@ -391,7 +387,7 @@ class Item extends ApiObject {
 		return $this;
 	}
 
-	public function changeQuantity(int $quantityChange, bool $decrease = true) {
+	public function changeQuantity(int $quantityChange, bool $decrease = true): void {
 		if ($decrease) {
 			$this->quantityChange -= $quantityChange;
 		} else {

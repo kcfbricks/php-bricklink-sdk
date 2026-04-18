@@ -7,7 +7,7 @@ use Kcfbricks\PhpBricklinkSdk\Client;
 
 class CategoryRequest {
 	public static function getCategory(Client $client, int $categoryId): ?Category {
-		$response = $client->makeRequest("categories/{$categoryId}");
+		$response    = $client->makeRequest('categories/' . $categoryId);
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
 		//return the item as a Category object, or null if it does not exist
@@ -16,12 +16,13 @@ class CategoryRequest {
 			return null;
 		}
 
-		if (count(get_object_vars($decodedJson->data)) == 0) {
+		if (get_object_vars($decodedJson->data) === []) {
 			return null;
 		}
 
-		$mapper = new JsonMapper();
+		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
+
 		$category = $mapper->map($decodedJson->data, new Category());
 		$category->setHydrated();
 
@@ -29,10 +30,10 @@ class CategoryRequest {
 	}
 
 	public static function getCategories(Client $client): ?array {
-		$response = $client->makeRequest("categories");
+		$response    = $client->makeRequest("categories");
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
-		$mapper = new JsonMapper();
+		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
 		return $mapper->mapArray($decodedJson->data, [], Category::class);
 	}

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kcfbricks\PhpBricklinkSdk;
 
 class Config {
@@ -8,5 +10,6 @@ class Config {
 		public readonly string $consumerSecret,
 		public readonly string $tokenValue,
 		public readonly string $tokenSecret,
-	) {}
+	) {
+	}
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kcfbricks\PhpBricklinkSdk;
 
 use GuzzleHttp\Client as GuzzleClient;

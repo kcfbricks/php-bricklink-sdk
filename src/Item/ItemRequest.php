@@ -9,7 +9,7 @@ class ItemRequest {
 	public static function getCatalogueItem(Client $client, string $itemNumber, ?ItemType $itemType = null): ?Item {
 		$itemType = $itemType instanceof ItemType ? $itemType->value : "PART";
 
-		$response    = $client->makeRequest("items/{$itemType}/{$itemNumber}");
+		$response    = $client->makeRequest(sprintf('items/%s/%s', $itemType, $itemNumber));
 		$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
 		//return the item as an Item object, or null if it does not exist
@@ -18,7 +18,7 @@ class ItemRequest {
 			return null;
 		}
 
-		if (count(get_object_vars($decodedJson->data)) == 0) {
+		if (get_object_vars($decodedJson->data) === []) {
 			return null;
 		}
 
@@ -26,7 +26,7 @@ class ItemRequest {
 		$mapper->bStrictObjectTypeChecking = false;
 
 		// Validate enum values before mapping
-		$itemTypeValues = array_map(fn ($case) => $case->value, ItemType::cases());
+		$itemTypeValues = array_map(fn (\Kcfbricks\PhpBricklinkSdk\Item\ItemType $case) => $case->value, ItemType::cases());
 
 		if (property_exists($decodedJson->data, 'type') && !in_array($decodedJson->data->type, $itemTypeValues)) {
 			$decodedJson->data->type = ItemType::Part->value; // Default to PART
@@ -42,7 +42,7 @@ class ItemRequest {
 		$itemType = $itemType instanceof ItemType ? $itemType->value : "PART";
 
 		try {
-			$response    = $client->makeRequest("items/{$itemType}/{$itemNumber}/images/{$colour->getBricklinkId()}");
+			$response    = $client->makeRequest(sprintf('items/%s/%s/images/%s', $itemType, $itemNumber, $colour->getBricklinkId()));
 			$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 		} catch (\Exception) {
 			return null;
@@ -83,8 +83,8 @@ class ItemRequest {
 			$queryString['break_subsets'] = "true";
 		}
 
-		$url = "items/{$itemType}/{$itemNumber}/subsets";
-		if ($queryString) {
+		$url = sprintf('items/%s/%s/subsets', $itemType, $itemNumber);
+		if ($queryString !== []) {
 			$url .= "?" . http_build_query($queryString);
 		}
 
@@ -97,6 +97,7 @@ class ItemRequest {
 
 		$mapper                            = new JsonMapper();
 		$mapper->bStrictObjectTypeChecking = false;
+
 		$subsets                           = $mapper->mapArray($decodedJson->data, [], Subset::class);
 
 		//explicitly map the entry list as the mapper above doesn't go into this
@@ -130,7 +131,7 @@ class ItemRequest {
 		$queryStringParameters['va']            = "N";
 
 		try {
-			$url         = "items/{$itemType->value}/{$itemNumber}/price?" . http_build_query($queryStringParameters);
+			$url         = sprintf('items/%s/%s/price?', $itemType->value, $itemNumber) . http_build_query($queryStringParameters);
 			$response    = $client->makeRequest($url);
 			$decodedJson = json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
 
