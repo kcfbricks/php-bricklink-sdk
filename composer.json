@@ -1,6 +1,6 @@
 {
     "name": "kcfbricks/php-bricklink-sdk",
-    "description": "PHP SDK for the BrickLink API",
+    "description": "PHP client library for the BrickLink API",
     "type": "library",
     "license": "MIT",
     "require": {
