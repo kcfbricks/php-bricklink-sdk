@@ -36,7 +36,7 @@ class OrderItem extends ApiObject {
 	/**
 	 * Indicates whether the item is new or used
 	 */
-	protected Condition $newOrUsed;
+	protected ?Condition $newOrUsed = null;
 
 	/**
 	 * Indicates whether the set is complete or incomplete

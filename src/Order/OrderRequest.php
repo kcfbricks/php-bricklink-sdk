@@ -131,16 +131,16 @@ class OrderRequest {
 			// Validate each item in the batch
 			foreach ($thisBatch as $thisItemData) {
 				// Validate order item enums - use defaults for non-nullable properties
-				if (property_exists($thisItemData, 'new_or_used') && !in_array($thisItemData->new_or_used, $conditionValues)) {
+				if (!property_exists($thisItemData, 'new_or_used') || !in_array($thisItemData->new_or_used, $conditionValues, true)) {
 					$thisItemData->new_or_used = Condition::New->value; // Default to New condition
 				}
 
-				if (property_exists($thisItemData, 'completeness') && !in_array($thisItemData->completeness, $completenessValues)) {
+				if (property_exists($thisItemData, 'completeness') && !in_array($thisItemData->completeness, $completenessValues, true)) {
 					$thisItemData->completeness = null; // Nullable property
 				}
 
 				// Validate nested item object enums
-				if (property_exists($thisItemData, 'item') && is_object($thisItemData->item) && (property_exists($thisItemData->item, 'type') && !in_array($thisItemData->item->type, $itemTypeValues))) {
+				if (property_exists($thisItemData, 'item') && is_object($thisItemData->item) && (property_exists($thisItemData->item, 'type') && !in_array($thisItemData->item->type, $itemTypeValues, true))) {
 					$thisItemData->item->type = ItemType::Part->value;
 					// Default to PART
 				}
