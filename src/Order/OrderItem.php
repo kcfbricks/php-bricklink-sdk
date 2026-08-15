@@ -76,12 +76,12 @@ class OrderItem extends ApiObject {
 	/**
 	 * User remarks of the order item
 	 */
-	protected string $remarks;
+	protected string $remarks = '';
 
 	/**
 	 * User description of the order item
 	 */
-	protected string $description;
+	protected string $description = '';
 
 	/**
 	 * The weight of the item that overrides the catalog weight
