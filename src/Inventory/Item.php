@@ -55,7 +55,7 @@ class Item extends ApiObject {
 	/**
 	 * A short description for this inventory
 	 */
-	protected string $description;
+	protected string $description = '';
 
 	/**
 	 * User remarks on this inventory
